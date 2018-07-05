@@ -1,17 +1,15 @@
-#' @describeIn get_p_except_for methodto access to the detail
+#' @describeIn get_p_except_for method to access to the detail
 #'             "initial_strip".
 #' @inheritParams get_initial_strip
 #' @export
-#' @examples
-#' get_p_except_for(nord, 'piemonte')
-get_p_except_for.macroarea <- function(macroarea, offering_reagion) {
+get_p_except_for.macroarea <- function(macroarea, offering_region) {
 
-  assertive::assert_is_a_string(offering_reagion)
-  offering_reagion <- tolower(offering_reagion)
+  assertive::assert_is_a_string(offering_region)
+  offering_region <- tolower(offering_region)
   area_region <- get_all_region(macroarea)
-  assertive::assert_is_subset(offering_reagion, area_region)
+  assertive::assert_is_subset(offering_region, area_region)
 
-  other_reagion <- setdiff(area_region, offering_reagion)
+  other_reagion <- setdiff(area_region, offering_region)
 
   get_regions(macroarea)[other_reagion] %>%
     purrr::map_dbl(get_p_accept) %>%
@@ -20,13 +18,10 @@ get_p_except_for.macroarea <- function(macroarea, offering_reagion) {
 
 
 
-#' @describeIn get_p_except_for methodto access to the detail
+#' @describeIn get_p_except_for method to access to the detail
 #'             "initial_strip".
 #' @inheritParams get_initial_strip
 #' @export
-#' @examples
-#' get_p_except_for(italy)
-#' get_p_except_for(lazio)
 get_p_except_for.default <- function(macroarea, offering_region) {
   stop(
     paste0(

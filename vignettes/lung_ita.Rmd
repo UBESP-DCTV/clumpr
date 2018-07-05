@@ -135,7 +135,7 @@ nitp <- macroregion('NIT-p',
 ```{r}
 nord <- macroarea('nord',
   set_macroregions(nitp, piemonte, vda, emilia, toscana, sardegna),
-  initial_strip = c('toscana', 'piemonte', 'emilia', 'nitp')
+  initial_strip = c('toscana', 'piemonte', 'emilia-romagna', 'nit-p')
 )
 sud  <- macroarea('sud',
   set_macroregions(

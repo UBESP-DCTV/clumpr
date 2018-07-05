@@ -8,7 +8,7 @@
 \usage{
 get_p_except_for(macroarea, offering_region)
 
-\method{get_p_except_for}{macroarea}(macroarea, offering_reagion)
+\method{get_p_except_for}{macroarea}(macroarea, offering_region)
 
 \method{get_p_except_for}{default}(macroarea, offering_region)
 }
@@ -30,15 +30,10 @@ excluding the (macro-)region how have offered the organ.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{macroarea}: methodto access to the detail
+\item \code{macroarea}: method to access to the detail
 "initial_strip".
 
-\item \code{default}: methodto access to the detail
+\item \code{default}: method to access to the detail
 "initial_strip".
 }}
 
-\examples{
-get_p_except_for(nord, 'piemonte')
-get_p_except_for(italy)
-get_p_except_for(lazio)
-}
