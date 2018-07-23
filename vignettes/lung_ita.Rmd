@@ -165,6 +165,7 @@ sud
 ```{r}
 nitp
 piemonte
+lombardia
 vda
 
 umbria
