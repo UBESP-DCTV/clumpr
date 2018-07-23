@@ -139,6 +139,10 @@ macroarea <- function(name, macroregions,
 set_macroregions <- function(...) {
   .dots <- list(...)
 
+  if (length(.dots) == 1L & inherits(.dots[[1]][[1]], c('region', 'macroregion'))) {
+    .dots <- .dots[[1]]
+  }
+
   if (!all(purrr::map_lgl(.dots, inherits, c('region', 'macroregion')))) {
     stop(
       paste0('All ', crayon::silver("macroregions"), ' must be of class ',

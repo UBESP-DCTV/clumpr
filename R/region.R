@@ -93,6 +93,10 @@ region <- function(centers, default_p = 1) {
 set_centers <- function(...) {
   .dots <- list(...)
 
+  if (length(.dots) == 1L & inherits(.dots[[1]][[1]], 'center')) {
+    .dots <- .dots[[1]]
+  }
+
   if (!all(purrr::map_lgl(.dots, inherits, 'center'))) stop(
     paste0('All ', crayon::silver("centers"), ' must be of class ',
         crayon::green('center'), ', and they aren\'t.\n\n',
