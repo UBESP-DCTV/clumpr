@@ -1,22 +1,57 @@
 shinyServer(function(input, output, session) {
 
 
+  # Macroarea selector
+  macro_areas <- reactive({
+    req(input$macroareas)
+    stringr::str_split(input$macroareas, "[^\\w|-]+") %>%
+      unlist
+  })
 
-  # input fields are treated as a group
-  formData <- reactive({
-    sapply(names(GetTableMetadata()$fields), function(x) input[[x]])
+  observeEvent(input$macroareas, {
+    updateSelectInput(session, "ma",
+      choices = c("Choose" = "", macro_areas()))
+  })
+
+
+  # Macroregion selector
+  macro_regions <- reactive({
+    req(input$macroregions)
+    stringr::str_split(input$macroregions, "[^\\w|-]+") %>%
+      unlist
+  })
+
+  observeEvent(input$macroregions, {
+    updateSelectInput(session, "mr_name",
+      choices = c("Choose" = "", macro_regions()))
   })
 
   # Check macroregion -> disable the input
   observeEvent(input$mr, {
     if (!input$mr) {
       shinyjs::disable("mr_name")
-      updateTextInput(session, "mr_name", value = '')
     } else {
       shinyjs::enable("mr_name")
-      updateTextInput(session, "mr_name", value = 'NIT-p')
     }
   })
+
+
+  # region selector
+  regions <- reactive({
+    req(input$state)
+    clumpr::regions[[tolower(input$state)]]
+  })
+
+  observeEvent(input$macroregions, {
+    updateSelectInput(session, "region",
+      choices = c("Choose" = "", stringr::str_to_title(regions())))
+  })
+
+  # input fields are treated as a group
+  formData <- reactive({
+    sapply(names(GetTableMetadata()$fields), function(x) input[[x]])
+  })
+
 
 
   # Check center -> disable the input

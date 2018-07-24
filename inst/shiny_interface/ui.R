@@ -1,60 +1,84 @@
 library(shinyjs)
 
-shinyUI(fluidPage(
-  # Use shiny js to disable fields
-  shinyjs::useShinyjs(),
+shinyUI(
+  fluidPage(
+    # Use shiny js to disable fields
+    shinyjs::useShinyjs(),
+    title = "UBESP/Shiny/CLUMPR",
+    titlePanel("Current transpLant sUrplus Management Protocol in R"),
 
-    # Application title
-  titlePanel("Current transpLant sUrplus Management Protocol in R"),
-
-  tabsetPanel(
-    # Inserimento dati
-    tabPanel('Setup',
-       # flowLayout(
-       #  verticalLayout(
-            # Input fields
-            disabled(textInput("id", "Id", "0")),
+    tabsetPanel(
 
 
-            textInput("state", "State", "Italy"),
+      # Inserimento dati --------------------------------------------
+      tabPanel('Setup',
+        sidebarLayout(
+         sidebarPanel(
+
+          fileInput("datafile",
+            label  = "Load data choosing an RDS file (optional)",
+            accept = ".RDS"
+          ),
+
+          strong("GLOBAL INFORMATION"),
+
+          selectInput("state", "State",
+            stringr::str_to_title(names(clumpr::regions))
+          ),
+          textInput("macroareas", "Macroareas (strip-ordered)", "Nord, Sud"),
+          textInput("macroregions", "Macroregions", "NIT-p"),
+
+          hr(),
+
+          strong("LOCAL INFORMATION"),
+          disabled(textInput("id", "Id", "0")),
+
+          selectInput("ma", "Macroarea", character(0)),
+
+          fluidRow(
+            column(4, checkboxInput("mr", "In macroregion?", FALSE)),
+            column(8, selectInput("mr_name", "Macroregion", character(0)))
+          ),
+
+          selectInput("region", "Region", character(0)),
+
+          fluidRow(
+            column(4, checkboxInput("center", "Has centers?", TRUE)),
+            column(8, textInput("center_name", "Center", character(0)))
+          ),
 
 
-            textInput("ma", "Macroarea", ""),
+          fluidRow(
+            column(6, sliderInput("p_accept", "Acceptance rate", 0, 100, 100,
+                step = 0.1,
+                post = " %"
+            )),
+            column(6,
+              sliderInput("offered", "Number of surplus", 0L, 365L, 1L,
+                step = 1L, post = " organs"
+              )
+            )
+          ),
 
+          hr(),
 
-        # (Macro)regions --------------------------------------------
-            checkboxInput("mr", "In macroregion?", FALSE),
-            textInput("mr_name", "Macroregion", ""),
-            textInput("region", "Region", ""),
+          actionButton("new", "New"),
+          actionButton("submit", "Submit"),
+          actionButton("delete", "Delete"),
+          actionButton("makeit", "Make it!")
+         ), # end sidebarPanel
 
-        # Centers ---------------------------------------------------
-
-            checkboxInput("center", "Has centers?", TRUE),
-            textInput("center_name", "Center", ""),
-            sliderInput("p_accept", "Acceptance rate", 0, 100, 100,
-              step = 0.1,
-              post = " %"
-            ),
-
-
-            sliderInput("offered", "Number of surplus", 0L, 365L, 1L,
-              step = 1L, post = " organs"
-            ),
-
-
-            #action buttons
-            actionButton("new", "New"),
-            actionButton("submit", "Submit"),
-            actionButton("delete", "Delete"),
-            actionButton("makeit", "Make it!"),
-        # ), # end verticalLayout
-        #  verticalLayout(
-            #data table
+         mainPanel(
             DT::dataTableOutput("centers_table", width = 300)
-       #   ) # end verticalLayout
-       # ) # end flowLayout
+         ) # end mainPanel
+       ) # end sidebarLayout
     ), # end tabPanel
+
+
+
+
     tabPanel('Graph'
+
     ) # end tabPanel
   ) # end tabsetPanel
 )) # end fluidPage and shinyUI
