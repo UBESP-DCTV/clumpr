@@ -37,10 +37,25 @@ shinyUI(
 
           fluidRow(
             column(4, checkboxInput("mr", "In macroregion?", FALSE)),
-            column(8, selectInput("mr_name", "Macroregion", character(0)))
+            column(4, selectInput("mr_name", "Macroregion", character(0))),
+            column(4, numericInput("macropos", "Strip-position", 0L,
+              min = 0L, max = 1L, step = 1L
+            ))
           ),
 
-          selectInput("region", "Region", character(0)),
+          fluidRow(
+            column(4, selectInput("region", "Region", character(0))),
+            column(4, textInput("inmacropos", "Strip-position",
+              character(0)
+            )),
+            column(4, numericInput("regpos",
+              label = "Strip-position",
+              value = 0L,
+              min   = 0L,
+              max   = 1L,
+              step  = 1L
+            ))
+          ),
 
           fluidRow(
             column(4, checkboxInput("center", "Has centers?", TRUE)),

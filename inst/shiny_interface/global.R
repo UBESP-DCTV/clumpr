@@ -1,3 +1,5 @@
+library(clumpr)
+library(tidyverse)
 library(shiny)
 
 # Helper functions --------------------------------------------------------
@@ -17,6 +19,9 @@ CastData <- function(data) {
     center_name = data[["center_name"]],
     p_accept    = as.numeric(data[["p_accept"]]),
     offered     = as.integer(data[["offered"]]),
+    regpos      = as.integer(data[["regpos"]]),
+    macropos    = as.integer(data[["macropos"]]),
+    inmacropos  = data[["inmacropos"]],
 
     stringsAsFactors = FALSE,
     row.names        = data[["id"]]
@@ -40,7 +45,10 @@ CreateDefaultRecord <- function() {
     center      = TRUE,
     center_name = NA_character_,
     p_accept    = 100,
-    offered     = 1L
+    offered     = 1L,
+    regpos      = NA_integer_,
+    macropos    = NA_integer_,
+    inmacropos  = NA_character_
   ))
 }
 
@@ -60,6 +68,9 @@ UpdateInputs <- function(data, session) {
   updateTextInput(session,     "center_name", value = data[["center_name"]])
   updateSliderInput(session,   "p_accept",    value = data[["p_accept"]])
   updateSliderInput(session,   "offered",     value = data[["offered"]])
+  updateNumericInput(session,  "regpos",      value = as.integer(data[["regpos"]]))
+  updateNumericInput(session,  "macropos",    value = as.integer(data[["macropos"]]))
+  updateTextInput(session,     "inmacropos",  value = data[["inmacropos"]])
 }
 
 
@@ -81,7 +92,6 @@ GetNextId <- function() {
 
 
 
-
 # It’s just a method that defines the names of the columns in our table:
 GetTableMetadata <- function() {
   list(
@@ -95,7 +105,10 @@ GetTableMetadata <- function() {
       center      = "Has centers?",
       center_name = "Center",
       p_accept    = "Acceptance rate",
-      offered     = "Number of surplus"
+      offered     = "Number of surplus",
+      regpos      = "Area-strip region-position",
+      macropos    = "Area-strip macroregion-position",
+      inmacropos  = "Macroregion-strip position(s)"
     )
   )
 }
@@ -157,56 +170,7 @@ centers_table <<- centers_table[row.names(centers_table) != unname(data[["id"]])
 
 
 
-
-
-# Create state
-CreateState <- function() {
-  if (!exists("centers_table")) {
-    return(invisible(NULL))
-  }
-
-  my_state <<- state(centers_table[['state']][[1]],
-    set_macroareas(
-      purrr::map(unique(centers_table[['ma']]),
-
-        function(ma) {
-          macroarea(ma,
-            set_macroregions(
-              purrr::map(
-                centers_table[centers_table[['ma']] == ma, 'region'] %>%
-                  purrr::set_names(.),
-
-                function(reg) {
-                  region(
-                    set_centers(
-                      purrr::map(
-                        centers_table[centers_table[['region']] == reg, 'center_name'] %>%
-                          purrr::set_names(.),
-
-                        function(cent) {
-                          center(
-                            name     = cent,
-                            region   = reg,
-                            offered  = centers_table[centers_table[['center_name']] == cent, 'offered'][[1]],
-                            p_accept = centers_table[centers_table[['center_name']] == cent, 'p_accept'][[1]] / 100
-                          ) # center creatred
-                        }
-                      ) # all centers of the region created
-                    )
-                  )
-                } # end of the region function
-              ) %>%  # all region created
-              ## region created, here we have to aggregate the macroregions!
-              ## befor to pass them to set_macroregions()
-              merge_macroregion(macro_area = ma)
-            )
-          )
-        }
-      )
-    )
-  )
-}
-
+# function to merge macroregion used in the creation of the reactive state
 
 merge_macroregion <- function(..., macro_area) {
   regions <- list(...)[[1]]
@@ -235,7 +199,7 @@ merge_macroregion <- function(..., macro_area) {
           ] %>%
           '['(unique(names(.)))
         ),
-        initial_strip = names(regions)
+        initial_strip = ma_strip(centers_table, mr)
       )
     }
   ) %>%
@@ -245,8 +209,48 @@ merge_macroregion <- function(..., macro_area) {
 
 
 
+# find the strip for the macroarea
+ma_strip <- function(data, ma) {
+  data %>%
+    filter(ma == ma) %>%
+    mutate(
+      strip_rank = if_else(is.na(regpos), macropos, regpos),
+      strip_name = if_else(is.na(regpos), mr_name, region)
+    ) %>%
+    filter(!is.na(strip_rank)) %>%
+    group_by(strip_rank) %>%
+    summarize(
+      mr = strip_name[[1]]
+    ) %>%
+    ungroup %>%
+    as.data.frame() %>%
+    `[[`('mr')
+}
 
 
+
+# find the strip for the macroarea
+ma_strip <- function(data, macror) {
+  rank_data <- data %>%
+    filter(mr_name == macror, center) %>%
+    group_by(region) %>%
+    filter(row_number() == 1) %>%
+    select(region, inmacropos) %>%
+    mutate(
+      mr_rank = inmacropos %>%
+        map(~stringr::str_split(., "[^\\w]+") %>%
+          unlist() %>%
+          as.integer()
+        )
+    ) %>%
+    ungroup()
+
+  mr_rank <- vector('character', sum(purrr::map_int(rank_data$mr_rank, length)))
+  for(i in seq_along(rank_data[['mr_rank']])) {
+    mr_rank[rank_data[['mr_rank']][[i]]] <- rank_data[["region"]][[i]]
+  }
+  mr_rank
+}
 # CREDITS -----------------------------------------------------------------
 
 # https://ipub.com/shiny-crud-app/
