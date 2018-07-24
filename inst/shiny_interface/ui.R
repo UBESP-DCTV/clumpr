@@ -84,7 +84,7 @@ shinyUI(
          ), # end sidebarPanel
 
          mainPanel(
-            DT::dataTableOutput("centers_table", width = 300)
+            DT::dataTableOutput("centers_table")
          ) # end mainPanel
        ) # end sidebarLayout
     ), # end tabPanel
@@ -92,8 +92,33 @@ shinyUI(
 
 
 
-    tabPanel('Graph'
-
+    tabPanel('Graph',
+      navbarPage(title = "Level of detail: ",
+        tabPanel("Macroarea", plotOutput("pma")),
+        tabPanel("State",
+          navbarPage(title = "Probability for: ",
+            tabPanel("the n-th lung",
+              sidebarLayout(
+                sidebarPanel(
+                  sliderInput("nth", "Lung number:",
+                    min = 1L, max = 1L, value = 1L
+                  )
+                ),
+                mainPanel(plotOutput("ricacct"))
+              )
+            ),
+            tabPanel("at least n lungs",
+              'plotOutput("")'
+            )
+          )
+        ),
+        tabPanel("Macroregions' details",
+          navbarPage(title = "Probability for: ",
+            tabPanel("the n-th lung", 'plotOutput("")'),
+            tabPanel("at least n lungs", 'plotOutput("")')
+          )
+        )
+      )
     ) # end tabPanel
   ) # end tabsetPanel
 )) # end fluidPage and shinyUI

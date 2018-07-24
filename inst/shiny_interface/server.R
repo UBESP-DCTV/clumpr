@@ -258,8 +258,9 @@ shinyServer(function(input, output, session) {
 
   # Create state
   my_state <- reactive({
-    cat("11111111111")
     if (!exists("centers_table")) return(NULL)
+
+    input$makeit
 
     state(
       name       = centers_table[['state']][[1]],
@@ -283,8 +284,8 @@ shinyServer(function(input, output, session) {
 
                           function(cent) {
                            center(
-                              name     = cent,
-                              region   = reg,
+                              name     = cent %>% tolower(),
+                              region   = reg %>% tolower(),
                               offered  = centers_table[centers_table[['center_name']] == cent, 'offered'][[1]],
                               p_accept = centers_table[centers_table[['center_name']] == cent, 'p_accept'][[1]] / 100
                             ) # center creatred
@@ -298,25 +299,97 @@ shinyServer(function(input, output, session) {
                   ## befor to pass them to set_macroregions()
                   merge_macroregion(macro_area = ma)
               ), # end set_macroregions() for macroarea definition
-              initial_strip = ma_strip(centers_table, ma)
+              initial_strip = ma_strip_f(centers_table, ma) %>% tolower()
             ) # end macroarea()
           } # end function for create macroareas inside purrr::map()
         ) # end purrr::map() for set_macroareas()
       ), # end set_macroareas()
-      initial_strip = input$macroareas
+      initial_strip = macro_areas() %>% tolower()
     ) # end state()
   }) # end reactive()
 
 
   # Press "Make it!" button -> create the state
   observeEvent(input$makeit, {
-    my_state()
+    # my_state()
     UpdateInputs(CreateDefaultRecord(), session)
   })
 
 
+ # Probability for a lung to be accepted by a macroarea
+  pma <- reactive({
+    my_state() %>%
+    get_p_macroareas() %>%
+    tidyr::spread('macroarea', 'prob') %>%
+    dplyr::select(-lost) %>%
+    as.list()
+  })
+
+  pap <- reactive({
+    my_state() %>%
+    get_p_accept_by_position()
+  })
+
+  output$pma <- renderPlot({
+    my_state()
+
+    pma() %>%
+      as_data_frame %>%
+      mutate(lost = 1 - (sum(., na.rm = TRUE))) %>%
+      gather("ma", "prob") %>%
+      ggplot(aes(x = ma, y = prob, fill = ma)) +
+      geom_bar(stat = 'identity') +
+      xlab("Macroareas") +
+      ylab("Probability") +
+      ggtitle(
+        'Probability for a lung to be offered and accepted in each macroares (or lost).'
+      )
+  })
+
+
+  max_offered <- reactive({
+    my_state() %>%
+      get_offered()
+  })
+
+  # probabilità di ricevere e accettare al tempo t
+  ricacct <- reactive({
+
+    my_state() %>%
+    get_p_position_by_time(max_offered()) %>%
+    map(function(stage) {
+      pmap(.l = list(stage, pap(), pma()), function(.x1, .x2, .x3) {
+        (.x1 * .x2) %>%
+          rowSums() %>%
+          `*`(.x3) %>%
+          as_data_frame() %>%
+          mutate(region = row.names(.x1))
+      })
+    })
+  })
 
 
 
+  output$ricacct <- renderPlot({
+    ricacct()[[input$nth]] %>%
+      bind_rows(.id = "ma") %>%
+      ggplot(aes(x = region, y = value, fill = ma)) +
+      geom_bar(stat = 'identity') +
+      xlab("(Macro)regions") +
+      ylab("Probability") +
+      ggtitle(
+        paste0(
+          'Probabilty for the lung number ', input$nth,
+          ' (of ', length(ricacct()), ') to be offered and accepted by the (macro)regions.'
+        )
+      )
+  })
+
+
+  observeEvent(my_state(),{
+    updateSliderInput(session, "nth", min = 1L, max = max_offered(), step = 1L)
+
+
+  })
 
 })

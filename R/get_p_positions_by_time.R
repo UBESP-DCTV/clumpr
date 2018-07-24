@@ -31,7 +31,7 @@ get_p_position_by_time <- function(state, n = 1L) {
           `[`(strip) %>%
           purrr::map_dbl(get_p_accept)
 
-        transition_position(positions[[m - 1]][[.x]], base_probs) %>%
+        transition_position(positions[[m - 1]][[.x %>% tolower()]], base_probs) %>%
           `row.names<-`(strip)
       })
   }

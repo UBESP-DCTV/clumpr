@@ -210,9 +210,9 @@ merge_macroregion <- function(..., macro_area) {
 
 
 # find the strip for the macroarea
-ma_strip <- function(data, ma) {
-  data %>%
-    filter(ma == ma) %>%
+ma_strip_f <- function(data_full, macar) {
+  data_full %>%
+    filter(ma == macar) %>%
     mutate(
       strip_rank = if_else(is.na(regpos), macropos, regpos),
       strip_name = if_else(is.na(regpos), mr_name, region)
@@ -230,7 +230,7 @@ ma_strip <- function(data, ma) {
 
 
 # find the strip for the macroarea
-ma_strip <- function(data, macror) {
+mr_strip <- function(data, macror) {
   rank_data <- data %>%
     filter(mr_name == macror, center) %>%
     group_by(region) %>%
