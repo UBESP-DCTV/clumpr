@@ -1,3 +1,4 @@
+library(polynom)
 library(clumpr)
 library(tidyverse)
 library(shiny)

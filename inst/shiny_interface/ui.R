@@ -108,7 +108,14 @@ shinyUI(
               )
             ),
             tabPanel("at least n lungs",
-              'plotOutput("")'
+              sidebarLayout(
+                sidebarPanel(
+                  sliderInput("atleastn", "Minimum number of lung(s):",
+                    min = 1L, max = 1L, value = 1L
+                  )
+                ),
+                mainPanel(plotOutput("atleastplot"))
+              )
             )
           )
         ),

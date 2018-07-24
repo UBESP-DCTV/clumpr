@@ -385,11 +385,58 @@ shinyServer(function(input, output, session) {
       )
   })
 
+  tidy_probs <- reactive(
+    ricacct() %>%
+      map(~bind_rows(., .id = "ma"))
+  )
+
+  region_probs <- reactive(
+    setNames(
+      map(seq_along(tidy_probs()[[1]][["region"]]), ~{
+        map_dbl(seq_along(tidy_probs()),
+          function(z) tidy_probs()[[z]][["value"]][[.]]
+        )
+      }),
+      tidy_probs()[[1]][["region"]]
+    )
+  )
+
+
+  output$atleastplot <- renderPlot({
+    map_dbl(
+      seq_along(region_probs()) %>% set_names(names(region_probs())), ~ {
+        map(seq_along(region_probs()[[1]]),
+            function(z) {
+              polynomial(c(1 - region_probs()[[.]][[z]], region_probs()[[.]][[z]]))
+            }
+        ) %>%
+          as.polylist %>%
+          prod(na.rm = TRUE) %>%
+          coef %>%
+          `[`(-seq_len(input$atleastn - 1)) %>%
+          sum(na.rm = TRUE)
+      }
+    ) %>%
+      data_frame(region = names(.), ma = tidy_probs()[[1]][["ma"]]) %>%
+      rename(cum_prob = ".") %>%
+      ggplot(aes(x = region, y = cum_prob, fill = ma)) +
+      geom_bar(stat = 'identity') +
+      xlab("(Macro)regions") +
+      ylab("Probability") +
+      ggtitle(paste0(
+        'Probability that at least ', input$atleastn,
+        ' (out of ', length(ricacct()),
+        ') lungs will be offered and accepted by the (macro)regions.'
+      ))
+  })
 
   observeEvent(my_state(),{
-    updateSliderInput(session, "nth", min = 1L, max = max_offered(), step = 1L)
-
-
+    updateSliderInput(session, "nth",
+      min = 1L, max = max_offered(), step = 1L
+    )
+    updateSliderInput(session, "atleastn",
+      min = 1L, max = max_offered(), step = 1L
+    )
   })
 
 })
