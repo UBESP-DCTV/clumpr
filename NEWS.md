@@ -1,5 +1,7 @@
 # clumpr 0.1.0
 
+* shinyapp
+
 # clumpr 0.0.5
 
 * Added strip support to state
