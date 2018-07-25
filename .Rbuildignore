@@ -1,5 +1,10 @@
-^viper\.Rproj$
+^clumpr\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$
 ^LICENSE\.md$
 ^data-raw$
+^\.travis\.yml$
+^codecov\.yml$
+^appveyor\.yml$
+^CODE_OF_CONDUCT\.md$
+^\.github$

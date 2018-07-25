@@ -1,4 +1,4 @@
 library(testthat)
-library(viper)
+library(clumpr)
 
-test_check("viper")
+test_check("clumpr")

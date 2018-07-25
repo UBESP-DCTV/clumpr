@@ -1,0 +1,182 @@
+---
+title: "Lung transplant surplus management in Italy"
+author: "Lanera Corrado"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Lung transplant surplus management in Italy}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r packages}
+library(clumpr)
+```
+
+# Setup
+
+## Centers
+```{r}
+# Veneto
+padova  <- center('Padova', 'Veneto', offered = 10, p_accept = 0.8)
+
+# Lombardia
+pavia   <- center('Pavia',   'Lombardia', offered = 10, p_accept = 0.8)
+bergamo <- center('Bergamo', 'Lombardia', offered = 10, p_accept = 0.8)
+milano  <- center('Milano',  'Lombardia', offered = 10, p_accept = 0.8)
+
+# Piemonte
+torino  <- center('Torino', 'Piemonte', offered = 10, p_accept = 0.8)
+
+# Emilia Romagna
+bologna <- center('Bologna', 'Emilia-Romagna', offered = 10, p_accept = 0.8)
+
+# Toscana
+siena   <- center('Siena', 'Toscana', offered = 10, p_accept = 0.8)
+
+# Lazio
+roma    <- center('Roma', 'Lazio', offered = 10, p_accept = 0.8)
+
+# Sicilia
+palermo <- center('Palermo', 'Sicilia', offered = 10, p_accept = 0.8)
+```
+
+## No-Transplant centers
+```{r}
+# Liguria
+liguria_centers <- center('Liguria-centers', 'Liguria', offered = 10, p_accept = 0)
+
+# Trentino
+trentino_centers <- center('Trentino-centers', 'Trentino-Alto Adige', offered = 10, p_accept = 0)
+
+# Friuli
+friuli_centers <- center('Friuli-centers', 'Friuli-Venezia Giulia', offered = 10, p_accept = 0)
+
+# Marche
+marche_centers <- center('Marche-centers', 'Marche', offered = 10, p_accept = 0)
+
+# Valle d'Aosta
+vda_centers <- center('Valle d\'Aosta-centers', 'Valle d\'Aosta', offered = 10, p_accept = 0)
+
+# sardegna
+sardegna_centers <- center('Sardegna-centers', 'Sardegna', offered = 10, p_accept = 0)
+
+# Umbria
+umbria_centers <- center('Umbria-centers', 'Umbria', offered = 10, p_accept = 0)
+
+# Abruzzo
+abruzzo_centers <- center('Abruzzo-centers', 'Abruzzo', offered = 10, p_accept = 0)
+
+# Molise
+molise_centers <- center('Molise-centers', 'Molise', offered = 10, p_accept = 0)
+
+# Campania
+campania_centers <- center('Campania-centers', 'Campania', offered = 10, p_accept = 0)
+
+# Basilicata
+basilicata_centers <- center('Basilicata-centers', 'Basilicata', offered = 10, p_accept = 0)
+
+# Puglia
+puglia_centers <- center('Puglia-centers', 'Puglia', offered = 10, p_accept = 0)
+
+# Calabria
+calabria_centers <- center('Calabria-centers', 'Calabria', offered = 10, p_accept = 0)
+```
+
+
+## Regions
+```{r}
+# NIT-p
+veneto    <- region(set_centers(padova))
+lombardia <- region(set_centers(pavia, bergamo, milano))
+liguria   <- region(set_centers(liguria_centers))
+trentino  <- region(set_centers(trentino_centers))
+friuli    <- region(set_centers(friuli_centers))
+marche    <- region(set_centers(marche_centers))
+
+# Nord non NIT-p
+piemonte <- region(set_centers(torino))
+vda      <- region(set_centers(vda_centers))
+emilia   <- region(set_centers(bologna))
+toscana  <- region(set_centers(siena))
+sardegna <- region(set_centers(sardegna_centers))
+
+# Sud
+umbria     <- region(set_centers(umbria_centers))
+lazio      <- region(set_centers(roma))
+abruzzo    <- region(set_centers(abruzzo_centers))
+molise     <- region(set_centers(molise_centers))
+campania   <- region(set_centers(campania_centers))
+basilicata <- region(set_centers(basilicata_centers))
+puglia     <- region(set_centers(puglia_centers))
+calabria   <- region(set_centers(calabria_centers))
+sicilia    <- region(set_centers(palermo))
+```
+
+## Macroregions
+```{r}
+nitp <- macroregion('NIT-p',
+  regions = set_regions(
+    veneto, lombardia, liguria, trentino, friuli, marche
+  ),
+  initial_strip = c('lombardia', 'lombardia', 'veneto')
+)
+```
+
+
+## Macroareas
+```{r}
+nord <- macroarea('nord',
+  set_macroregions(nitp, piemonte, vda, emilia, toscana, sardegna),
+  initial_strip = c('toscana', 'piemonte', 'emilia-romagna', 'nit-p')
+)
+sud  <- macroarea('sud',
+  set_macroregions(
+    umbria, lazio, abruzzo, molise, campania, basilicata, puglia, calabria,
+    sicilia
+  ),
+  initial_strip = c('lazio', 'sicilia')
+)
+```
+
+
+## State
+```{r}
+italy <- state('Italy', set_macroareas(nord, sud))
+```
+
+
+# Inspect
+```{r}
+italy
+```
+```{r}
+nord
+sud
+```
+
+```{r}
+nitp
+piemonte
+lombardia
+vda
+
+umbria
+lazio
+sicilia
+```
+
+
+```{r}
+padova
+palermo
+liguria_centers
+```
+

@@ -1,14 +1,8 @@
-Package: clumpr
 Type: Package
-Version: 0.0.0.9006
-Date: "`r Sys.Date()`"
+Package: clumpr
 Title: Current transpLant sUrplus Management Protocol in R
-Description: The `clumpr` package aims is to provide a toolbox of function
-  for model, validate and visualize dynamics assessed by the "Protocollo
-  Nazionale per la Gestione delle Eccedenze di Tutti i Programmi di
-  Trapianto" in Italy. The first implementation is focused on the
-  lung-transplant centers management.
-Maintainer: Corrado Lanera <corrado.lanera@unipd.it>
+Version: 0.1.0
+Date: "`r Sys.Date()`"
 Authors@R: c(
     person("Corrado", "Lanera", email = "corrado.lanera@unipd.it",
       role = c("aut", "cre")
@@ -16,25 +10,46 @@ Authors@R: c(
     person("Ileana", "Baldi", email = "ileana.baldi@unipd.it",
       role = c("aut")
     ),
+    person("Marco", "Schiavon", email = "marcoschi79@yahoo.it",
+      role = c("aut")
+    ),
     person("Dario", "Gregori", email = "dario.gegori@unipd.it",
       role = c("aut")
     )
   )
+Maintainer: Corrado Lanera <corrado.lanera@unipd.it>
+Description: The `clumpr` package aims is to provide a toolbox of function
+  for model, validate and visualize dynamics assessed by the "Protocollo
+  Nazionale per la Gestione delle Eccedenze di Tutti i Programmi di
+  Trapianto" in Italy. The first implementation is focused on the
+  lung-transplant centers management.
 License: GPL-3
 URL: https://github.com/UBESP-DCTV/viper
 BugReports: https://github.com/UBESP-DCTV/viper/issues
+Depends: 
+    R (>= 3.2)
+Imports: 
+    assertive (>= 0.3.5),
+    crayon (>= 1.3.4),
+    glue (>= 1.2.0),
+    magrittr (>= 1.5),
+    purrr (>= 0.2.4),
+    rlang (>= 0.2.0),
+    tidyr (>= 0.8.1),
+    wavethresh (>= 4.6.8),
+    polynom (>= 1.3.9)
+Suggests: 
+    covr (>= 3.0.1),
+    dplyr (>= 0.7.4),
+    rvest (>= 0.3.2),
+    stringr (>= 1.3.0),
+    testthat (>= 2.0.0),
+    tibble (>= 1.4.2),
+    xml2 (>= 1.2.0),
+    knitr (>= 1.20),
+    rmarkdown (>= 1.10)
+ByteCompile: true
 Encoding: UTF-8
 LazyData: true
-ByteCompile: true
-Suggests: 
-    testthat,
-    xml2,
-    rvest,
-    stringr,
-    tibble,
-    dplyr
 RoxygenNote: 6.0.1
-Imports: 
-    magrittr,
-    assertive,
-    crayon
+VignetteBuilder: knitr

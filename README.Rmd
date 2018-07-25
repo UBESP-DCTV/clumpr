@@ -1,6 +1,7 @@
 ---
 title: clumpr
-output: github_document
+output: 
+  github_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -14,13 +15,19 @@ knitr::opts_chunk$set(
 )
 ```
 
+[![Travis Build Status](https://travis-ci.com/UBESP-DCTV/clumpr.svg?token=wGyFLep97LHjNKfPGjkg&branch=structures)](https://travis-ci.org/UBESP-DCTV/clumpr)
+[![Codecov Status](https://codecov.io/gh/UBESP-DCTV/clumpr/branch/structures/graph/badge.svg?token=IY02gbLUth)](https://codecov.io/gh/UBESP-DCTV/clumpr)
+[![Build status](https://ci.appveyor.com/api/projects/status/2q6ylqbu14cu43am?svg=true)](https://ci.appveyor.com/project/CorradoLanera/clumpr)
+[![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+[![CRAN status](https://www.r-pkg.org/badges/version/clumpr)](https://cran.r-project.org/package=clumpr)
+
 **C**urrent transp**L**ant s**U**rplus **M**anagement **P**rotocol in **R**
 
 Last update: `r Sys.Date()`
 
 ## Description
 
-The `clumpr` package aims is to provide a toolbox of function for model,
+The `clumpr` package aims to provide a toolbox of function for model,
 validate and visualize dynamics assessed by the "Protocollo Nazionale per la
 Gestione delle Eccedenze di Tutti i Programmi di Trapianto" in Italy.
 
@@ -35,6 +42,59 @@ This is a basic example which shows you how it works:
 
 
 ```{r}
+library(clumpr)
+
+# setup centers and regions
+pavia   <- center('Pavia',   'Lombardia', offered = 11, p_accept = 0.8)
+bergamo <- center('Bergamo', 'Lombardia', offered =  7, p_accept = 0.5)
+milano  <- center('Milano',  'Lombardia', offered =  3)
+
+lombardia <- region(set_centers(pavia, bergamo, milano), default_p = 0.2)
+
+# show data
+lombardia
+get_centers(lombardia)
+
+# setup macroregions
+padova <- center('Padova', 'Veneto', 10, 0.9)
+veneto <- region(set_centers(padova))
+
+nitp <- macroregion('NITp', set_regions(lombardia, veneto),
+  initial_strip = c('lombardia',  'lombardia', 'veneto'))
+
+# show data
+nitp
+get_regions(nitp)
+get_centers(nitp)
+
+# add another region and setup a macroarea
+torino   <- center('Torino', 'Piemonte', 7, 0.6)
+piemonte <- region(set_centers(torino))
+
+nord <- macroarea('Nord',
+  macroregions = set_macroregions(piemonte, nitp)
+)
+
+nord
+get_macroregions(nord)
+get_regions(nord)
+get_centers(nord)
+
+roma   <- center('Roma', 'Lazio', 10, 0.9)
+lazio  <- region(set_centers(roma))
+
+sud <- macroarea('Sud',
+  macroregions = set_macroregions(lazio)
+)
+
+italy <- state('Italy', set_macroareas(nord, sud))
+italy
+
+get_macroareas(italy)
+get_macroregions(italy)
+get_regions(italy)
+get_centers(italy)
+
 # TODO
 ```
 
@@ -42,7 +102,7 @@ This is a basic example which shows you how it works:
 
 ## Installation
 
-You can install viper from GitHub with:
+You can install clumpr from GitHub with:
 
 ```{r gh-installation, eval = FALSE}
 # install.packages("devtools")
@@ -57,6 +117,10 @@ If you encounter a bug, please file a
 to <https://github.com/UBESP-DCTV/clumpr/issues>
 
 
+## Code of conduct
+Please note that this project is released with a
+[Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this
+project you agree to abide by its terms.
 
 ## References
 
