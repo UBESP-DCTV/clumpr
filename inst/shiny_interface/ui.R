@@ -92,7 +92,7 @@ shinyUI(
 
 
 
-    tabPanel('Graph',
+    tabPanel('Graphs',
       navbarPage(title = "Level of detail: ",
         tabPanel("Macroarea", plotOutput("pma")),
         tabPanel("State",
@@ -140,7 +140,7 @@ shinyUI(
                     min = 1L, max = 1L, value = 1L
                   )
                 ),
-                mainPanel("DO THIS HAVE REALY SENSE?!")#plotOutput("atleastplot_macro"))
+                mainPanel("DO THIS HAVE REALY SENSE?! (HOW?)")#plotOutput("atleastplot_macro"))
               )
             )
           )
