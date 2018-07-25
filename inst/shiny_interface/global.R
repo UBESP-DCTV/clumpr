@@ -1,5 +1,6 @@
 library(polynom)
 library(clumpr)
+library(magrittr)
 library(tidyverse)
 library(shiny)
 
@@ -188,7 +189,6 @@ merge_macroregion <- function(..., macro_area) {
       'region'
     ]
 
-
   purrr::map(actual_mr,
     function(mr) {
 
@@ -200,11 +200,10 @@ merge_macroregion <- function(..., macro_area) {
           ] %>%
           '['(unique(names(.)))
         ),
-        initial_strip = ma_strip(centers_table, mr)
+        initial_strip = mr_strip(centers_table, mr)
       )
     }
   ) %>%
-
   c(regions[singles])
 }
 

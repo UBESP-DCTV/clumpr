@@ -120,9 +120,29 @@ shinyUI(
           )
         ),
         tabPanel("Macroregions' details",
+          selectInput("mr_name_macro", "Macroregion", character(0)),
+          hr(),
           navbarPage(title = "Probability for: ",
-            tabPanel("the n-th lung", 'plotOutput("")'),
-            tabPanel("at least n lungs", 'plotOutput("")')
+            tabPanel("the n-th lung",
+              sidebarLayout(
+                sidebarPanel(
+                  sliderInput("nth_macro", "Lung number:",
+                    min = 1L, max = 1L, value = 1L
+                  )
+                ),
+                mainPanel(plotOutput("ricacct_macro"))
+              )
+            ),
+            tabPanel("at least n lungs",
+              sidebarLayout(
+                sidebarPanel(
+                  sliderInput("atleastn_macro", "Minimum number of lung(s):",
+                    min = 1L, max = 1L, value = 1L
+                  )
+                ),
+                mainPanel("DO THIS HAVE REALY SENSE?!")#plotOutput("atleastplot_macro"))
+              )
+            )
           )
         )
       )

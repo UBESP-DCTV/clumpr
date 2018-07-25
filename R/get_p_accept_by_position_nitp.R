@@ -11,7 +11,7 @@
 #' @export
 get_p_accept_by_position_nitp <- function(macroregion, state) {
 
-  strip_macroregion <- get_initial_strip(macroregion)
+  strip_macroregion <- get_initial_strip(macroregion) %>% tolower
 
   p_offered_macroregion <- get_regions(macroregion)[strip_macroregion] %>%
     purrr::map_dbl(get_offered) %>%

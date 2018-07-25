@@ -12,7 +12,8 @@
 #' @export
 get_p_position_by_time_nitp <- function(mr, n = 1, state) {
 
-  strip_macroregion <- get_initial_strip(mr)
+
+  strip_macroregion <- get_initial_strip(mr) %>% tolower()
 
   p_accept_macroregion <- get_regions(mr)[strip_macroregion] %>%
     purrr::map_dbl(get_p_accept)
