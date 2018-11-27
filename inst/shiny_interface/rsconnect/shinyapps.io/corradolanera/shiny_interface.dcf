@@ -1,0 +1,12 @@
+name: shiny_interface
+title: shiny_interface
+username:
+account: corradolanera
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 387556
+bundleId: 1498321
+url: https://corradolanera.shinyapps.io/shiny_interface/
+when: 1532487716.98917
+asMultiple: FALSE
+asStatic: FALSE

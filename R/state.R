@@ -162,6 +162,10 @@ state <- function(name, macroareas,
 set_macroareas <- function(...) {
   .dots <- list(...)
 
+  if (length(.dots) == 1L & inherits(.dots[[1]][[1]], 'macroarea')) {
+    .dots <- .dots[[1]]
+  }
+
   if (!all(purrr::map_lgl(.dots, inherits, c('macroarea')))) {
     stop(
       paste0('All ', crayon::silver("macroareas"), ' must be of class ',

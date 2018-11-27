@@ -104,6 +104,11 @@ macroregion <- function(name,
 set_regions <- function(...) {
   .dots <- list(...)
 
+  if (length(.dots) == 1L & inherits(.dots[[1]][[1]], 'region')) {
+    .dots <- .dots[[1]]
+  }
+
+
   if (!all(purrr::map_lgl(.dots, inherits, 'region'))) stop(
     paste0('All ', crayon::silver("regions"), ' must be of class ',
         crayon::green('region'), ', and they aren\'t.\n\n',

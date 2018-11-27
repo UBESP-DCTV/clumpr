@@ -163,6 +163,26 @@ get_p_accept <- function(x, ...) {
   UseMethod("get_p_accept")
 }
 
+
+#' Get the probability of acceptance exept for a given center
+#'
+#' This is a generic function aimed to access (or compute) to the
+#' probability of acceptance (for an offered organ) by an area
+#' excluding the (macro-)region how have offered the organ.
+#'
+#' @param macroarea an object used to select a method.
+#' @param offering_region a region name into the area
+#' @param ... further arguments passed to or from other methods.
+#'
+#' @return The probability of acceptance for the \code{macroarea} don't
+#'         considering the \code{offering_region}.
+#' @export
+get_p_except_for <- function(macroarea, offering_region) {
+  UseMethod("get_p_except_for")
+}
+
+
+
 #' Get number of offered organs
 #'
 #' This is a generic function aimed to access (or compute) to the

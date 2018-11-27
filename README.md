@@ -16,7 +16,7 @@ status](https://www.r-pkg.org/badges/version/clumpr)](https://cran.r-project.org
 **C**urrent transp**L**ant s**U**rplus **M**anagement **P**rotocol in
 **R**
 
-Last update: 2018-04-30
+Last update: 2018-06-11
 
 ## Description
 
