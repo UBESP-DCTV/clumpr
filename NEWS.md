@@ -1,3 +1,5 @@
+# clumpr 0.1.1
+
 * Included italian data for 2015 and 2016
 * Added dependency from the **svDialogs** package
 * Added button to save data in RDA on the hard drive
