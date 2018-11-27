@@ -210,7 +210,7 @@ shinyServer(function(input, output, session) {
   })
 
 
-  # Click "Submit" button -> save data
+  # Click "Submit" button -> save data on R
   observeEvent(input$submit, {
     if (input$id != "0") {
       UpdateData(formData())
@@ -235,6 +235,11 @@ shinyServer(function(input, output, session) {
     UpdateInputs(CreateDefaultRecord(), session)
   }, priority = 1)
 
+
+  # Click "Save data" button -> save data on disk
+  observeEvent(input$savedata, {
+    save_data(centers_table)
+  }, priority = 1)
 
 
   # Select row in table -> show details in inputs
