@@ -32,7 +32,8 @@
 
 \method{get_time}{macroregion}(x, ...)
 
-macroregion(name, regions, initial_strip = purrr::map_chr(regions, "region"))
+macroregion(name, regions, initial_strip = purrr::map_chr(regions,
+  "region"))
 
 \method{print}{macroregion}(x, ...)
 }

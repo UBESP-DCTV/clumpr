@@ -1,3 +1,8 @@
+* Included italian data for 2015 and 2016
+* Added dependency from the **svDialogs** package
+* Added button to save data in RDA on the hard drive
+* Interface updated with explicit number instead of sliders
+
 # clumpr 0.1.0
 
 * shinyapp
