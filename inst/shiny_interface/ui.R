@@ -64,11 +64,11 @@ shinyUI(
 
 
           fluidRow(
-            column(6, numericInput("p_accept", "Acceptance rate",
+            column(6, numericInput("p_accept", "Acceptance rate (%)",
                 min   = 0,
-                max   = 1,
-                value = 1,
-                step  = 0.01
+                max   = 100,
+                value = 100,
+                step  = 0.1
             )),
             column(6, numericInput("offered",
                 "Number of surplus organs",
@@ -85,7 +85,8 @@ shinyUI(
           actionButton("new", "New"),
           actionButton("submit", "Submit"),
           actionButton("delete", "Delete"),
-          actionButton("makeit", "Make it!")
+          actionButton("makeit", "Make it!"),
+          actionButton("savedata", "Save data!")
          ), # end sidebarPanel
 
          mainPanel(

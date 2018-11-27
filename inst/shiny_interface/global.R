@@ -3,6 +3,7 @@ library(clumpr)
 library(magrittr)
 library(tidyverse)
 library(shiny)
+library(svDialogs)
 
 # Helper functions --------------------------------------------------------
 
@@ -250,6 +251,12 @@ mr_strip <- function(data, macror) {
     mr_rank[rank_data[['mr_rank']][[i]]] <- rank_data[["region"]][[i]]
   }
   mr_rank
+}
+
+
+save_data <- function(x) {
+  file_name <- svDialogs::dlgSave()$res
+  saveRDS(x, file_name)
 }
 # CREDITS -----------------------------------------------------------------
 
