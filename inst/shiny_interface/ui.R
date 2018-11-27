@@ -64,13 +64,18 @@ shinyUI(
 
 
           fluidRow(
-            column(6, sliderInput("p_accept", "Acceptance rate", 0, 100, 100,
-                step = 0.1,
-                post = " %"
+            column(6, numericInput("p_accept", "Acceptance rate",
+                min   = 0,
+                max   = 1,
+                value = 1,
+                step  = 0.01
             )),
-            column(6,
-              sliderInput("offered", "Number of surplus", 0L, 365L, 1L,
-                step = 1L, post = " organs"
+            column(6, numericInput("offered",
+                "Number of surplus organs",
+                min   = 0L,
+                max   = 365L,
+                value = 1L,
+                step  = 1L
               )
             )
           ),
