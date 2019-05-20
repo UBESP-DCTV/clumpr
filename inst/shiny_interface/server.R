@@ -100,6 +100,11 @@ shinyServer(function(input, output, session) {
     }, {
     if ((!input$mr)) {
       shinyjs::disable("mr_name")
+      updateSelectInput(session, "mr_name",
+        choices = c("Choose" = "", macro_regions()),
+        selected = ""
+      )
+
       shinyjs::disable("macropos")
       updateNumericInput(session, "macropos",
         label = paste0("Strip-position"),
