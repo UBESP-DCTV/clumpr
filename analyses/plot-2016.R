@@ -5,7 +5,7 @@ library(polynom)
 library(clumpr)
 
 
-centers_table <- read_rds(here("inst/shiny_interface/data/2015_italy.RDS"))
+centers_table <- read_rds(here("inst/shiny_interface/data/2016_italy.RDS"))
 
 merge_macroregion <- function(..., macro_area) {
   regions <- list(...)[[1]]
@@ -126,16 +126,16 @@ ma <- set_macroareas(
   ) # end purrr::map() for set_macroareas()
 )
 
-state_2015 <- state(
+state_2016 <- state(
   name       = centers_table[['state']][[1]],
   macroareas = ma
 )
 
-pma <- state_2015 %>%
-    get_p_macroareas() %>%
-    tidyr::spread('macroarea', 'prob') %>%
-    dplyr::select(-lost) %>%
-    as.list()
+pma <- state_2016 %>%
+  get_p_macroareas() %>%
+  tidyr::spread('macroarea', 'prob') %>%
+  dplyr::select(-lost) %>%
+  as.list()
 
 # pma %>%
 #   as_data_frame %>%
@@ -150,12 +150,12 @@ pma <- state_2015 %>%
 #   )
 
 # Probability to accept by position
-pap <- state_2015 %>%
-    get_p_accept_by_position()
+pap <- state_2016 %>%
+  get_p_accept_by_position()
 
 
 
-ricacct <- state_2015 %>%
+ricacct <- state_2016 %>%
   get_p_position_by_time(get_offered(.)) %>%
   map(function(stage) {
     pmap(.l = list(stage, pap, pma), function(.x1, .x2, .x3) {
@@ -176,7 +176,7 @@ pmr <- function(.state) {
 }
 
 
-df_mr <- pmr(state_2015)
+df_mr <- pmr(state_2016)
 
 
 
@@ -191,7 +191,7 @@ df_mr %>%
 
 
 
-ggplot2::ggsave(here("analyses/output/2015_p-by-n.png"),
+ggplot2::ggsave(here("analyses/output/2016_p-by-n.png"),
   width = 11.7, height = 8.3
 )
 
@@ -206,9 +206,8 @@ ggplot2::ggsave(here("analyses/output/2015_p-by-n.png"),
 
 
 
-
 tidy_probs <- ricacct %>%
-    map(~bind_rows(., .id = "ma"))
+  map(~bind_rows(., .id = "ma"))
 
 region_probs <- setNames(
   map(seq_along(tidy_probs[[1]][["region"]]), ~{
@@ -243,7 +242,7 @@ p_atleast_n <- function(n) {
 
 
 df_atleast <- map_dfr(
-  .x  = seq_len(get_offered(state_2015)),
+  .x  = seq_len(get_offered(state_2016)),
   .f  = p_atleast_n,
   .id = "n"
 )
@@ -261,12 +260,13 @@ df_atleast %>%
 
 
 
-
-
-
-ggplot2::ggsave(here("analyses/output/2015_p_at-least-n.png"),
+ggplot2::ggsave(here("analyses/output/2016_p_at-least-n.png"),
   width = 11.7, height = 8.3
 )
+
+
+
+
 
 
 
