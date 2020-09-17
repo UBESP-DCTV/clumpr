@@ -5,7 +5,11 @@ library(polynom)
 library(clumpr)
 
 
-centers_table <- read_rds(here("inst/shiny_interface/data/2016_italy.RDS"))
+acceptance_rate <- 10
+centers_table <- here("inst/shiny_interface/data/2016_italy.RDS") %>%
+  read_rds() %>%
+  mutate(across(p_accept, ~if_else(.x != 0, acceptance_rate, .x)))
+
 
 merge_macroregion <- function(..., macro_area) {
   regions <- list(...)[[1]]
@@ -186,12 +190,15 @@ df_mr %>%
   geom_line() +
   xlab(expression(paste("n"^{th},' lung offered'))) +
   ylab("P") +
-  ggtitle("Probability for each n-th lung of being offered to and accepted by the regions") +
+  ggtitle("Probability for each n-th lung of being offered to and accepted by the regions",
+          subtitle = paste0("Year: 2016; mean acceptance rate: ",
+                            acceptance_rate)) +
   theme(legend.position = "top")
 
 
 
-ggplot2::ggsave(here("analyses/output/2016_p-by-n.png"),
+ggplot2::ggsave(here("analyses", "output",
+  paste0("2016_p-by-n_", acceptance_rate, "accept.png")),
   width = 11.7, height = 8.3
 )
 
@@ -253,14 +260,17 @@ df_atleast %>%
   geom_line() +
   xlab("n lungs offered") +
   ylab("P") +
-  ggtitle("Probability, for each n, that at least n lungs would be offered to and accepted by the regions") +
+  ggtitle("Probability, for each n, that at least n lungs would be offered to and accepted by the regions",
+          subtitle = paste0("Year: 2016; mean acceptance rate: ",
+                            acceptance_rate)) +
   theme(legend.position = "top") +
   coord_cartesian(xlim = c(0, 30))
 
 
 
 
-ggplot2::ggsave(here("analyses/output/2016_p_at-least-n.png"),
+ggplot2::ggsave(here("analyses", "output",
+  paste0("2016_p_at-least-n_", acceptance_rate, "accept.png")),
   width = 11.7, height = 8.3
 )
 

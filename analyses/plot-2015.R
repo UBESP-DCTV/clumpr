@@ -5,7 +5,11 @@ library(polynom)
 library(clumpr)
 
 
-centers_table <- read_rds(here("inst/shiny_interface/data/2015_italy.RDS"))
+acceptance_rate <- 10
+centers_table <- here("inst/shiny_interface/data/2015_italy.RDS") %>%
+  read_rds() %>%
+  mutate(across(p_accept, ~if_else(.x != 0, acceptance_rate, .x)))
+
 
 merge_macroregion <- function(..., macro_area) {
   regions <- list(...)[[1]]
@@ -20,7 +24,7 @@ merge_macroregion <- function(..., macro_area) {
     centers_table[
       centers_table[['region']] %in% names(regions) & !centers_table[['mr']],
       'region'
-      ]
+    ]
 
   purrr::map(actual_mr,
              function(mr) {
@@ -30,7 +34,7 @@ merge_macroregion <- function(..., macro_area) {
                              regions[
                                names(regions) %in%
                                  centers_table[centers_table[['mr_name']] == mr, 'region']
-                               ] %>%
+                             ] %>%
                                '['(unique(names(.)))
                            ),
                            initial_strip = mr_strip(centers_table, mr)
@@ -132,10 +136,10 @@ state_2015 <- state(
 )
 
 pma <- state_2015 %>%
-    get_p_macroareas() %>%
-    tidyr::spread('macroarea', 'prob') %>%
-    dplyr::select(-lost) %>%
-    as.list()
+  get_p_macroareas() %>%
+  tidyr::spread('macroarea', 'prob') %>%
+  dplyr::select(-lost) %>%
+  as.list()
 
 # pma %>%
 #   as_data_frame %>%
@@ -151,7 +155,7 @@ pma <- state_2015 %>%
 
 # Probability to accept by position
 pap <- state_2015 %>%
-    get_p_accept_by_position()
+  get_p_accept_by_position()
 
 
 
@@ -186,12 +190,15 @@ df_mr %>%
   geom_line() +
   xlab(expression(paste("n"^{th},' lung offered'))) +
   ylab("P") +
-  ggtitle("Probability for each n-th lung of being offered to and accepted by the regions") +
+  ggtitle("Probability for each n-th lung of being offered to and accepted by the regions",
+          subtitle = paste0("Year: 2015; mean acceptance rate: ",
+                            acceptance_rate)) +
   theme(legend.position = "top")
 
 
 
-ggplot2::ggsave(here("analyses/output/2015_p-by-n.png"),
+ggplot2::ggsave(here("analyses", "output",
+  paste0("2015_p-by-n_", acceptance_rate, "accept.png")),
   width = 11.7, height = 8.3
 )
 
@@ -205,10 +212,8 @@ ggplot2::ggsave(here("analyses/output/2015_p-by-n.png"),
 
 
 
-
-
 tidy_probs <- ricacct %>%
-    map(~bind_rows(., .id = "ma"))
+  map(~bind_rows(., .id = "ma"))
 
 region_probs <- setNames(
   map(seq_along(tidy_probs[[1]][["region"]]), ~{
@@ -254,19 +259,23 @@ df_atleast %>%
   geom_line() +
   xlab("n lungs offered") +
   ylab("P") +
-  ggtitle("Probability, for each n, that at least n lungs would be offered to and accepted by the regions") +
+  ggtitle("Probability, for each n, that at least n lungs would be offered to and accepted by the regions",
+          subtitle = paste0("Year: 2015; mean acceptance rate: ",
+                            acceptance_rate)) +
   theme(legend.position = "top") +
   coord_cartesian(xlim = c(0, 30))
 
 
 
 
-
-
-
-ggplot2::ggsave(here("analyses/output/2015_p_at-least-n.png"),
+ggplot2::ggsave(here("analyses", "output",
+  paste0("2015_p_at-least-n_", acceptance_rate, "accept.png")),
   width = 11.7, height = 8.3
 )
+
+
+
+
 
 
 
