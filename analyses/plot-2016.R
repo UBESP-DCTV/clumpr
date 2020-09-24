@@ -5,7 +5,7 @@ library(polynom)
 library(clumpr)
 
 
-acceptance_rate <- 10
+acceptance_rate <- 26
 centers_table <- here("inst/shiny_interface/data/2016_italy.RDS") %>%
   read_rds() %>%
   mutate(across(p_accept, ~if_else(.x != 0, acceptance_rate, .x)))
