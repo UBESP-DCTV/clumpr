@@ -1,4 +1,4 @@
-clumpr
+clumpr [![app](https://img.shields.io/badge/Live%20App-here-orange.svg)](https://r-ubesp.dctv.unipd.it/shiny/clumpr/)
 ================
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
