@@ -6,11 +6,8 @@ library(clumpr)
 library(patchwork)
 
 
-acceptance_rate <- 100
 
-
-make_p_by_n <- function(acceptance_rate, save = TRUE) {
-
+setup_clumpr <- function(acceptance_rate) {
   centers_table <- here("inst/shiny_interface/data/2015_italy.RDS") %>%
     read_rds() %>%
     mutate(across(p_accept, ~if_else(.x != 0, acceptance_rate, .x)))
@@ -176,6 +173,13 @@ make_p_by_n <- function(acceptance_rate, save = TRUE) {
       })
     })
 
+  ricacct
+
+}
+
+
+make_p_by_n <- function(ricacct, acceptance_rate, save = TRUE) {
+
   pmr <- function(.state) {
     map_dfr(
       .x  = seq_len(get_offered(.state)),
@@ -187,12 +191,11 @@ make_p_by_n <- function(acceptance_rate, save = TRUE) {
 
   df_mr <- pmr(state_2015)
 
-
-
   p <- df_mr %>%
     mutate(n = as.integer(n)) %>%
     ggplot(aes(n, value, colour = region)) +
-    geom_line() +
+    geom_line(alpha = 0.4) +
+    geom_smooth(se = FALSE) +
     xlab(expression(paste("n"^{th},' lung offered'))) +
     ylab("P") +
     ggtitle("Probability for each n-th lung of being offered to and accepted by the regions",
@@ -208,16 +211,15 @@ make_p_by_n <- function(acceptance_rate, save = TRUE) {
     )
   }
 
-  invisible(p)
+  p
 }
 
 
 
 
+make_p_at_least <- function(ricacct, acceptance_rate, save = TRUE) {
 
 
-
-make_p_at_least <- function(acceptance_rate, save = TRUE) {
 
   tidy_probs <- ricacct %>%
     map(~bind_rows(., .id = "ma"))
@@ -279,23 +281,44 @@ make_p_at_least <- function(acceptance_rate, save = TRUE) {
                     width = 11.7, height = 8.3
     )
   }
-  invisible(p)
+
+
+  p
 
 }
 
 
-p_by_n_90 <- make_p_by_n(90, FALSE) +
+make_plots <- function(acceptance_rate, save = FALSE) {
+
+  ricacct <- setup_clumpr(acceptance_rate)
+
+  list(
+    p_at_least = make_p_at_least(ricacct, acceptance_rate, save = save),
+    p_by_n = make_p_by_n(ricacct, acceptance_rate, save = save)
+  )
+}
+
+
+
+ninety_ok <- make_plots(90)
+all_ok <- make_plots(100)
+
+
+p_by_n_90 <- ninety_ok$p_by_n +
   labs(tag = "A") +
   theme(legend.position = c(.8, 0.65))
 
-p_at_least_90 <- make_p_at_least(90, FALSE) +
+p_at_least_90 <- ninety_ok$p_at_least +
   labs(tag = "B") +
   theme(legend.position = "none")
 
-p_by_n_100 <- make_p_by_n(100, FALSE) +
+
+
+p_by_n_100 <- all_ok$p_by_n +
   labs(tag = "C") +
   theme(legend.position = "none")
-p_at_least_100 <- make_p_at_least(100, FALSE) +
+
+p_at_least_100 <- all_ok$p_at_least +
   labs(tag = "D") +
   theme(legend.position = "none")
 
